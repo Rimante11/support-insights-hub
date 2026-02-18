@@ -44,7 +44,7 @@ README.md
 # Docker files (to avoid recursion)
 Dockerfile
 .dockerignore
-nginx.conf
+!nginx.conf
 
 # Git
 .git/
