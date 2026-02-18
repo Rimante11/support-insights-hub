@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: support-insights-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
+      - JwtSettings__SecretKey=YourSuperSecretKeyThatIsAtLeast32CharactersLong!
+      - JwtSettings__Issuer=SupportInsightsHub.Api
+      - JwtSettings__Audience=SupportInsightsHub.Client
+    networks:
+      - support-insights-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/auth/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # Frontend Application
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: support-insights-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - support-insights-network
+    environment:
+      - VITE_API_URL=http://localhost:5000
+    restart: unless-stopped
+
+networks:
+  support-insights-network:
+    driver: bridge
+
+# Optional: Add volumes for development
+# volumes:
+#   backend-data:
+#   frontend-node-modules:

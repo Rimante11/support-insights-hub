@@ -1,0 +1,51 @@
+# Build artifacts
+bin/
+obj/
+out/
+publish/
+
+# IDEs
+.vs/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# NuGet packages
+packages/
+*.nupkg
+
+# User-specific files
+*.user
+*.suo
+*.cache
+
+# Test results
+TestResults/
+
+# Documentation
+README.md
+*.md
+
+# Docker files (to avoid recursion)
+Dockerfile
+.dockerignore
+
+# Git
+.git/
+.gitignore
+.gitattributes
