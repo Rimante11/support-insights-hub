@@ -33,6 +33,8 @@ export interface ActivityLog {
   details: string;
 }
 
+const USERS_STORAGE_KEY = "support_insights_users";
+
 export const users: User[] = [
   { id: "U001", name: "Alice Johnson", email: "alice@company.com", role: "Admin", createdAt: "2024-01-15", lastLogin: "2025-02-14" },
   { id: "U002", name: "Bob Smith", email: "bob@company.com", role: "Agent", createdAt: "2024-03-20", lastLogin: "2025-02-13" },
@@ -41,6 +43,35 @@ export const users: User[] = [
   { id: "U005", name: "Eva Martinez", email: "eva@company.com", role: "Agent", createdAt: "2024-07-22", lastLogin: "2025-02-14" },
   { id: "U006", name: "Frank Lee", email: "frank@company.com", role: "Customer", createdAt: "2024-08-15", lastLogin: "2025-02-12" },
 ];
+
+export const getStoredUsers = (): User[] => {
+  if (typeof window === "undefined") {
+    return users;
+  }
+
+  const raw = localStorage.getItem(USERS_STORAGE_KEY);
+  if (!raw) {
+    return users;
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as User[];
+    if (!Array.isArray(parsed)) {
+      return users;
+    }
+    return parsed;
+  } catch {
+    return users;
+  }
+};
+
+export const saveStoredUsers = (updatedUsers: User[]) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(updatedUsers));
+};
 
 export const tickets: SupportTicket[] = [
   { ticketId: "T-1001", title: "Login page not loading", status: "Open", priority: "High", assignedAgent: "Bob Smith", createdDate: "2025-02-10", resolvedDate: null, category: "Bug" },

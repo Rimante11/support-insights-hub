@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useRef, useCallback } from "react";
+import { getStoredUsers } from "@/data/mock-data";
 
 interface User {
   id: string;
@@ -12,6 +13,7 @@ interface AuthContextType {
   token: string | null;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
+  updateCurrentUserProfile: (updatedUser: User) => void;
   isAuthenticated: boolean;
   isLoading: boolean;
 }
@@ -125,30 +127,48 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       // Simulating API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Mock user credentials for demo
-      const mockUsers = [
-        { email: "admin@company.com", password: "admin123", user: { id: "U001", name: "Alice Johnson", email: "admin@company.com", role: "Admin" } },
-        { email: "agent@company.com", password: "agent123", user: { id: "U002", name: "Bob Smith", email: "agent@company.com", role: "Agent" } },
-        { email: "customer@company.com", password: "customer123", user: { id: "U004", name: "Dan Wilson", email: "customer@company.com", role: "Customer" } },
+      const demoCredentials = [
+        { email: "admin@company.com", password: "admin123", userId: "U001" },
+        { email: "agent@company.com", password: "agent123", userId: "U002" },
+        { email: "customer@company.com", password: "customer123", userId: "U004" },
       ];
 
-      const foundUser = mockUsers.find(u => u.email === email && u.password === password);
+      const normalizedEmail = email.trim().toLowerCase();
+      const validCredential = demoCredentials.find(
+        (credential) => credential.email === normalizedEmail && credential.password === password,
+      );
 
-      if (foundUser) {
+      if (validCredential) {
+        const storedUser = getStoredUsers().find(
+          (candidate) => candidate.id === validCredential.userId,
+        );
+
+        if (!storedUser) {
+          setIsLoading(false);
+          return { success: false, error: "User profile not found" };
+        }
+
+        const authenticatedUser: User = {
+          id: storedUser.id,
+          name: storedUser.name,
+          email: storedUser.email,
+          role: storedUser.role,
+        };
+
         // Generate mock JWT token (in production, this comes from backend)
         const mockToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${btoa(JSON.stringify({ 
-          userId: foundUser.user.id, 
-          email: foundUser.user.email,
-          role: foundUser.user.role,
+          userId: authenticatedUser.id, 
+          email: authenticatedUser.email,
+          role: authenticatedUser.role,
           exp: Date.now() + 24 * 60 * 60 * 1000 // 24 hours
         }))}.mock-signature`;
 
         setToken(mockToken);
-        setUser(foundUser.user);
+        setUser(authenticatedUser);
         
         // Store in localStorage
         localStorage.setItem("auth_token", mockToken);
-        localStorage.setItem("auth_user", JSON.stringify(foundUser.user));
+        localStorage.setItem("auth_user", JSON.stringify(authenticatedUser));
         localStorage.setItem("last_activity", Date.now().toString());
 
         // Start inactivity timer
@@ -166,11 +186,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const updateCurrentUserProfile = useCallback((updatedUser: User) => {
+    setUser((currentUser) => {
+      if (!currentUser || currentUser.id !== updatedUser.id) {
+        return currentUser;
+      }
+
+      localStorage.setItem("auth_user", JSON.stringify(updatedUser));
+      return updatedUser;
+    });
+  }, []);
+
   const value: AuthContextType = {
     user,
     token,
     login,
     logout,
+    updateCurrentUserProfile,
     isAuthenticated: !!token && !!user,
     isLoading,
   };

@@ -1,5 +1,6 @@
 import DashboardSidebar from "@/components/DashboardSidebar";
 import { Activity as ActivityIcon } from "lucide-react";
+import ActivityFeed from "@/components/ActivityFeed";
 
 const Activity = () => {
   return (
@@ -20,7 +21,7 @@ const Activity = () => {
         </div>
 
         <div className="space-y-6">
-          <h4>In Progress</h4>
+          <ActivityFeed />
         </div>
       </main>
     </div>

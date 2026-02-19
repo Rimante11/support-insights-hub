@@ -1,5 +1,6 @@
 import DashboardSidebar from "@/components/DashboardSidebar";
 import { UserCheck } from "lucide-react";
+import AgentPerformance from "@/components/AgentPerformance";
 
 const Agents = () => {
   return (
@@ -20,7 +21,7 @@ const Agents = () => {
         </div>
 
         <div className="space-y-6">
-          <h4>In Progress</h4>
+          <AgentPerformance />
         </div>
       </main>
     </div>

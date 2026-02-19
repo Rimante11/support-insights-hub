@@ -1,3 +1,4 @@
+import { useState } from "react";
 import DashboardSidebar from "@/components/DashboardSidebar";
 import KpiCard from "@/components/KpiCard";
 import UsersTable from "@/components/UsersTable";
@@ -5,37 +6,41 @@ import UserActivityChart from "@/components/UserActivityChart";
 import RoleDistributionChart from "@/components/RoleDistributionChart";
 import RecentUserActivity from "@/components/RecentUserActivity";
 import { User, Users as UsersIcon, UserCheck, UserPlus, Shield } from "lucide-react";
-import { users } from "@/data/mock-data";
-
-// Calculate user statistics
-const totalUsers = users.length;
-
-// Active users (logged in within last 7 days)
-const now = new Date();
-const sevenDaysAgo = new Date(now);
-sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-const activeUsers = users.filter(user => {
-  const lastLogin = new Date(user.lastLogin);
-  return lastLogin >= sevenDaysAgo;
-}).length;
-
-// New users this month
-const newUsersThisMonth = users.filter(user => {
-  const createdDate = new Date(user.createdAt);
-  return createdDate.getMonth() === now.getMonth() && createdDate.getFullYear() === now.getFullYear();
-}).length;
-
-// Users by role
-const roleCount = users.reduce((acc, user) => {
-  acc[user.role] = (acc[user.role] || 0) + 1;
-  return acc;
-}, {} as Record<string, number>);
-
-const adminCount = roleCount["Admin"] || 0;
-const agentCount = roleCount["Agent"] || 0;
-const customerCount = roleCount["Customer"] || 0;
+import { User as AppUser, getStoredUsers, saveStoredUsers } from "@/data/mock-data";
 
 const Users = () => {
+  const [users, setUsers] = useState<AppUser[]>(() => getStoredUsers());
+
+  const now = new Date();
+  const sevenDaysAgo = new Date(now);
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const totalUsers = users.length;
+
+  const activeUsers = users.filter((user) => {
+    const lastLogin = new Date(user.lastLogin);
+    return lastLogin >= sevenDaysAgo;
+  }).length;
+
+  const newUsersThisMonth = users.filter((user) => {
+    const createdDate = new Date(user.createdAt);
+    return createdDate.getMonth() === now.getMonth() && createdDate.getFullYear() === now.getFullYear();
+  }).length;
+
+  const roleCount = users.reduce((acc, user) => {
+    acc[user.role] = (acc[user.role] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const adminCount = roleCount["Admin"] || 0;
+  const agentCount = roleCount["Agent"] || 0;
+  const customerCount = roleCount["Customer"] || 0;
+
+  const handleUsersChange = (updatedUsers: AppUser[]) => {
+    setUsers(updatedUsers);
+    saveStoredUsers(updatedUsers);
+  };
+
   return (
     <div className="flex min-h-screen bg-background">
       <DashboardSidebar />
@@ -86,7 +91,7 @@ const Users = () => {
         </div>
 
         <div className="space-y-6">
-          <UsersTable />
+          <UsersTable users={users} onUsersChange={handleUsersChange} />
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <UserActivityChart />

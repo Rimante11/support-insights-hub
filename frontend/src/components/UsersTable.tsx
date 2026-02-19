@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { users as initialUsers, User } from "@/data/mock-data";
+import { User } from "@/data/mock-data";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,8 +11,12 @@ import { Search, ChevronLeft, ChevronRight, Edit, Trash2, Eye, UserPlus, Downloa
 
 const ITEMS_PER_PAGE = 5;
 
-const UsersTable = () => {
-  const [users, setUsers] = useState<User[]>(initialUsers);
+interface UsersTableProps {
+  users: User[];
+  onUsersChange: (users: User[]) => void;
+}
+
+const UsersTable = ({ users, onUsersChange }: UsersTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -20,7 +24,7 @@ const UsersTable = () => {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const { toast } = useToast();
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, updateCurrentUserProfile } = useAuth();
 
   // Calculate active status (logged in within last 7 days)
   const now = new Date();
@@ -73,14 +77,23 @@ const UsersTable = () => {
   };
 
   const handleSaveUser = (updatedUser: User) => {
-    setUsers(prevUsers => 
-      prevUsers.map(u => u.id === updatedUser.id ? updatedUser : u)
-    );
+    const updatedUsers = users.map((u) => (u.id === updatedUser.id ? updatedUser : u));
+    onUsersChange(updatedUsers);
+
+    if (currentUser?.id === updatedUser.id) {
+      updateCurrentUserProfile({
+        id: updatedUser.id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        role: updatedUser.role,
+      });
+    }
   };
 
   const handleDeleteUser = (user: User) => {
     // In a real app, you'd show a confirmation dialog first
-    setUsers(prevUsers => prevUsers.filter(u => u.id !== user.id));
+    const updatedUsers = users.filter((u) => u.id !== user.id);
+    onUsersChange(updatedUsers);
     toast({
       title: "User Deleted",
       description: `${user.name} has been deleted`,
