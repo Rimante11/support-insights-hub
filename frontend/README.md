@@ -6,6 +6,9 @@ TO RUN APPLICSTION:
 Backend will run on http://localhost:5000
 - **cd frontend**
 - **npm run dev** on http://localhost:8081/ 
+DOCKER RUN
+-**docker compose up --build** OR start manualy via Dockers app -> play
+Backend API in Docker: http://localhost:5001
 
 A modern full-stack support dashboard application with a React TypeScript frontend and ASP.NET Core C# backend, featuring user management, ticket tracking, and performance analytics.
 
@@ -310,6 +313,13 @@ Run the test suite:
 
 ```bash
 npm run test
+```
+
+Run CI-equivalent checks from the project root (`dashboarrd_hub`):
+
+```bash
+dotnet test backend/tests/SupportInsightsHub.Api.Tests/SupportInsightsHub.Api.Tests.csproj --configuration Release --verbosity minimal
+cd frontend && npm run test
 ```
 
 Run tests in watch mode during development:

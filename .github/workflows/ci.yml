@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore backend test dependencies
+        run: dotnet restore backend/tests/SupportInsightsHub.Api.Tests/SupportInsightsHub.Api.Tests.csproj
+
+      - name: Run backend API tests
+        run: dotnet test backend/tests/SupportInsightsHub.Api.Tests/SupportInsightsHub.Api.Tests.csproj --configuration Release --no-restore --verbosity minimal
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm install
+
+      - name: Run frontend tests
+        working-directory: frontend
+        run: npm run test

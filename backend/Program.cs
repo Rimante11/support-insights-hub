@@ -83,4 +83,9 @@ app.UseAuthorization();
 // Map Controllers
 app.MapControllers();
 
+// Container health check endpoint
+app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
+
 app.Run();
+
+public partial class Program;

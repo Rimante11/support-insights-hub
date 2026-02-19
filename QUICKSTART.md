@@ -11,12 +11,12 @@ This project consists of two main components:
 If you have Docker Desktop installed:
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
 Access the application:
 - **Frontend**: http://localhost:8080
-- **Backend API**: http://localhost:5000
+- **Backend API**: http://localhost:5001
 
 See [DOCKER.md](DOCKER.md) for detailed Docker documentation.
 
@@ -64,7 +64,7 @@ npm run dev
 
 **Docker:**
 - **Frontend**: http://localhost:8080
-- **Backend API**: http://localhost:5000
+- **Backend API**: http://localhost:5001
 
 **API Documentation:**
 - **OpenAPI Spec**: http://localhost:5000/openapi/v1.json
@@ -85,7 +85,7 @@ npm run dev
 
 2. **Run the application**
    ```bash
-   docker-compose up --build
+   docker compose up --build
    ```
 
 3. **Access at** http://localhost:8080
@@ -126,6 +126,18 @@ If this is your first time running the project without Docker:
    ```bash
    ./start.sh
    ```
+
+## ✅ Run CI Checks Locally
+
+Run these commands from the project root (`dashboarrd_hub`) to match the GitHub Actions workflow:
+
+```bash
+# Backend API tests
+dotnet test backend/tests/SupportInsightsHub.Api.Tests/SupportInsightsHub.Api.Tests.csproj --configuration Release --verbosity minimal
+
+# Frontend tests
+cd frontend && npm run test
+```
 
 ## ⚡ Features
 

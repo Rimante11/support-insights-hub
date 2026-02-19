@@ -11,7 +11,7 @@ This guide explains how to run the Support Insights Hub application using Docker
 Verify Docker is installed:
 ```bash
 docker --version
-docker-compose --version
+docker compose version
 ```
 
 ## 🚀 Quick Start
@@ -22,15 +22,15 @@ Run both frontend and backend together:
 
 ```bash
 # Build and start all services
-docker-compose up --build
+docker compose up --build
 
 # Or run in detached mode (background)
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 The application will be available at:
 - **Frontend**: http://localhost:8080
-- **Backend API**: http://localhost:5000
+- **Backend API**: http://localhost:5001
 
 ### Option 2: Build and Run Individually
 
@@ -38,7 +38,7 @@ The application will be available at:
 ```bash
 cd backend
 docker build -t support-insights-backend .
-docker run -p 5000:5000 support-insights-backend
+docker run -p 5001:5000 support-insights-backend
 ```
 
 **Frontend:**
@@ -53,61 +53,61 @@ docker run -p 8080:80 support-insights-frontend
 ### Start Services
 ```bash
 # Build and start
-docker-compose up --build
+docker compose up --build
 
 # Start in background
-docker-compose up -d
+docker compose up -d
 
 # Start without building
-docker-compose up
+docker compose up
 ```
 
 ### Stop Services
 ```bash
 # Stop services
-docker-compose stop
+docker compose stop
 
 # Stop and remove containers
-docker-compose down
+docker compose down
 
 # Stop and remove containers, networks, and volumes
-docker-compose down -v
+docker compose down -v
 ```
 
 ### View Logs
 ```bash
 # View all logs
-docker-compose logs
+docker compose logs
 
 # Follow logs (live)
-docker-compose logs -f
+docker compose logs -f
 
 # View specific service logs
-docker-compose logs backend
-docker-compose logs frontend
+docker compose logs backend
+docker compose logs frontend
 ```
 
 ### Rebuild Services
 ```bash
 # Rebuild all services
-docker-compose build
+docker compose build
 
 # Rebuild specific service
-docker-compose build backend
-docker-compose build frontend
+docker compose build backend
+docker compose build frontend
 
 # Rebuild without cache
-docker-compose build --no-cache
+docker compose build --no-cache
 ```
 
 ### Restart Services
 ```bash
 # Restart all services
-docker-compose restart
+docker compose restart
 
 # Restart specific service
-docker-compose restart backend
-docker-compose restart frontend
+docker compose restart backend
+docker compose restart frontend
 ```
 
 ## 📁 Docker Configuration Files
@@ -156,20 +156,20 @@ environment:
 **Frontend:**
 ```yaml
 environment:
-  - VITE_API_URL=http://localhost:5000
+  - VITE_API_URL=http://localhost:5001
 ```
 
 ## 🌐 Port Configuration
 
 Default ports (can be changed in docker-compose.yml):
 - Frontend: `8080:80` (host:container)
-- Backend: `5000:5000` (host:container)
+- Backend: `5001:5000` (host:container)
 
 To change ports, edit `docker-compose.yml`:
 ```yaml
 ports:
   - "3000:80"  # Frontend on port 3000
-  - "4000:5000"  # Backend on port 4000
+  - "4001:5000"  # Backend on port 4001
 ```
 
 ## 🔍 Health Checks
@@ -182,39 +182,39 @@ The backend service includes a health check:
 
 Check service health:
 ```bash
-docker-compose ps
+docker compose ps
 ```
 
 ## 🐛 Troubleshooting
 
 ### Port Already in Use
-If ports 5000 or 8080 are in use:
+If ports 5001 or 8080 are in use:
 
 1. Change ports in `docker-compose.yml`
 2. Or stop the conflicting service:
 ```bash
 # macOS/Linux
-lsof -i :5000
+lsof -i :5001
 kill -9 <PID>
 
 # Windows
-netstat -ano | findstr :5000
+netstat -ano | findstr :5001
 taskkill /PID <PID> /F
 ```
 
 ### Container Won't Start
 View detailed logs:
 ```bash
-docker-compose logs backend
-docker-compose logs frontend
+docker compose logs backend
+docker compose logs frontend
 ```
 
 ### Image Build Fails
 Clear Docker cache and rebuild:
 ```bash
-docker-compose down
+docker compose down
 docker system prune -a
-docker-compose up --build
+docker compose up --build
 ```
 
 ### Connection Refused Between Services
@@ -246,8 +246,8 @@ docker volume prune
 ```bash
 docker ps
 
-# Or with docker-compose
-docker-compose ps
+# Or with docker compose
+docker compose ps
 ```
 
 ### View Resource Usage
@@ -300,7 +300,7 @@ For production, consider:
 
 1. **Use Environment-Specific Compose Files**
    ```bash
-   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+  docker compose -f docker-compose.yml -f docker-compose.prod.yml up
    ```
 
 2. **Enable HTTPS**
@@ -348,7 +348,7 @@ services:
 
 Run with:
 ```bash
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 ```
 
 ## 📝 Default Credentials
@@ -361,10 +361,10 @@ When accessing the application:
 ## 🆘 Getting Help
 
 If you encounter issues:
-1. Check container logs: `docker-compose logs`
-2. Verify service health: `docker-compose ps`
-3. Restart services: `docker-compose restart`
-4. Rebuild from scratch: `docker-compose down && docker-compose up --build`
+1. Check container logs: `docker compose logs`
+2. Verify service health: `docker compose ps`
+3. Restart services: `docker compose restart`
+4. Rebuild from scratch: `docker compose down && docker compose up --build`
 
 For more information:
 - [Docker Documentation](https://docs.docker.com/)
